@@ -1,276 +1,290 @@
 package assignment_1;
 
-import java.util.Random;
+import java.util.*;
+
 
 public class Assignment1 {
 
-    // =========================
-    // Q1: Clone an array
-    // =========================
-    static int[] cloneArray(int[] a) {
-        return (a == null) ? null : a.clone();
+    /* =========================
+       Q1: Clone an array
+       ========================= */
+    static int[] cloneArray(int[] arr) {
+        return arr.clone();
     }
 
-    // =========================
-    // Q2: Remove a random element from an array
-    // =========================
-    static int[] removeRandom(int[] a) {
-        if (a == null || a.length == 0) return a;
-        int idx = new Random().nextInt(a.length);
-        return removeAt(a, idx);
+    /* =========================
+       Q2: Remove random element from array
+       ========================= */
+    static int[] removeRandomElement(int[] arr) {
+        if (arr.length == 0) return arr;
+        Random r = new Random();
+        int index = r.nextInt(arr.length);
+        return removeAtIndex(arr, index);
     }
 
-    // =========================
-    // Q3: Remove a specific element from an array
-    // =========================
-    static int[] removeValue(int[] a, int value) {
-        if (a == null) return null;
-        int idx = -1;
-        for (int i = 0; i < a.length; i++) {
-            if (a[i] == value) {
-                idx = i;
+    /* =========================
+       Q3: Remove specific element from array
+       ========================= */
+    static int[] removeSpecificElement(int[] arr, int value) {
+        int index = -1;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == value) {
+                index = i;
                 break;
             }
         }
-        return (idx == -1) ? a : removeAt(a, idx);
+        if (index == -1) return arr;
+        return removeAtIndex(arr, index);
     }
 
-    // =========================
-    // Q4: Reverse an array
-    // =========================
-    static void reverseArray(int[] a) {
-        if (a == null) return;
-        for (int i = 0, j = a.length - 1; i < j; i++, j--) {
-            int t = a[i];
-            a[i] = a[j];
-            a[j] = t;
+    static int[] removeAtIndex(int[] arr, int index) {
+        int[] newArr = new int[arr.length - 1];
+        for (int i = 0, j = 0; i < arr.length; i++) {
+            if (i != index)
+                newArr[j++] = arr[i];
+        }
+        return newArr;
+    }
+
+    /* =========================
+       Q4: Reverse an array
+       ========================= */
+    static void reverseArray(int[] arr) {
+        int i = 0, j = arr.length - 1;
+        while (i < j) {
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+            i++; j--;
         }
     }
 
-    // Helper method (used in Q2 & Q3)
-    static int[] removeAt(int[] a, int idx) {
-        if (a == null || idx < 0 || idx >= a.length) return a;
-        int[] r = new int[a.length - 1];
-        for (int i = 0, k = 0; i < a.length; i++) {
-            if (i != idx) r[k++] = a[i];
-        }
-        return r;
-    }
-
-    // =========================
-    // Singly Linked List Node
-    // =========================
-    static class SNode {
+    /* =========================
+       Singly Linked List Node
+       ========================= */
+    static class Node {
         int data;
-        SNode next;
-        SNode(int d) { data = d; }
+        Node next;
+        Node(int data) {
+            this.data = data;
+        }
     }
 
-    // =========================
-    // Q5: Concatenate two linked lists
-    // =========================
-    static SNode concatenate(SNode h1, SNode h2) {
-        if (h1 == null) return h2;
-        SNode cur = h1;
-        while (cur.next != null) cur = cur.next;
-        cur.next = h2;
-        return h1;
+    /* =========================
+       Q5: Concatenate two linked lists
+       ========================= */
+    static Node concatenate(Node head1, Node head2) {
+        if (head1 == null) return head2;
+        Node temp = head1;
+        while (temp.next != null)
+            temp = temp.next;
+        temp.next = head2;
+        return head1;
     }
 
-    // =========================
-    // Q6: Rotate a linked list right by k
-    // =========================
-    static SNode rotateRight(SNode head, int k) {
-        if (head == null || head.next == null || k <= 0) return head;
+    /* =========================
+       Q6: Rotate linked list right by k
+       ========================= */
+    static Node rotateRight(Node head, int k) {
+        if (head == null || k == 0) return head;
 
-        int n = 1;
-        SNode tail = head;
-        while (tail.next != null) {
-            tail = tail.next;
-            n++;
+        Node temp = head;
+        int length = 1;
+        while (temp.next != null) {
+            temp = temp.next;
+            length++;
         }
 
-        k %= n;
-        if (k == 0) return head;
+        temp.next = head;
+        k = k % length;
+        int steps = length - k;
 
-        tail.next = head; // make circular
-        int steps = n - k;
-        SNode newTail = head;
-        for (int i = 1; i < steps; i++) newTail = newTail.next;
+        Node newTail = temp;
+        while (steps-- > 0)
+            newTail = newTail.next;
 
-        SNode newHead = newTail.next;
+        Node newHead = newTail.next;
         newTail.next = null;
         return newHead;
     }
 
-    // =========================
-    // Q8: Search and return position (1-based)
-    // =========================
-    static int searchPosition(SNode head, int value) {
-        int pos = 1;
-        for (SNode cur = head; cur != null; cur = cur.next) {
-            if (cur.data == value) return pos;
+    /* =========================
+       Q7: Search element in singly linked list (return position)
+       ========================= */
+    static int searchPosition(Node head, int key) {
+        int pos = 0;
+        while (head != null) {
+            if (head.data == key)
+                return pos;
             pos++;
+            head = head.next;
         }
         return -1;
     }
 
-    // =========================
-    // Q9: Find index (0-based)
-    // =========================
-    static int indexOf(SNode head, int value) {
-        int idx = 0;
-        for (SNode cur = head; cur != null; cur = cur.next) {
-            if (cur.data == value) return idx;
-            idx++;
-        }
-        return -1;
+    /* =========================
+       Q8: Find index of value in linked list
+       ========================= */
+    static int indexOf(Node head, int value) {
+        return searchPosition(head, value);
     }
 
-    // =========================
-    // Q11: Remove at specific position (0-based)
-    // =========================
-    static SNode removeAtPosition(SNode head, int pos) {
-        if (head == null || pos < 0) return head;
+    /* =========================
+       Q9: Remove at specific position in singly linked list
+       ========================= */
+    static Node removeAtPosition(Node head, int pos) {
+        if (head == null) return null;
         if (pos == 0) return head.next;
 
-        SNode prev = head;
-        for (int i = 0; i < pos - 1 && prev.next != null; i++)
-            prev = prev.next;
+        Node temp = head;
+        for (int i = 0; i < pos - 1 && temp.next != null; i++)
+            temp = temp.next;
 
-        if (prev.next != null)
-            prev.next = prev.next.next;
+        if (temp.next != null)
+            temp.next = temp.next.next;
 
         return head;
     }
 
-    // =========================
-    // Doubly Linked List Node
-    // =========================
+    /* =========================
+       Doubly Linked List Node
+       ========================= */
     static class DNode {
         int data;
         DNode prev, next;
-        DNode(int d) { data = d; }
-    }
-
-    // =========================
-    // Q12: Remove duplicates from doubly linked list
-    // =========================
-    static DNode removeDuplicates(DNode head) {
-        for (DNode cur = head; cur != null; cur = cur.next) {
-            for (DNode run = cur.next; run != null; ) {
-                DNode nextRun = run.next;
-                if (run.data == cur.data) {
-                    if (run.prev != null) run.prev.next = run.next;
-                    if (run.next != null) run.next.prev = run.prev;
-                }
-                run = nextRun;
-            }
+        DNode(int data) {
+            this.data = data;
         }
-        if (head != null) head.prev = null;
-        return head;
     }
 
-    // =========================
-    // Q13: Traverse doubly linked list in reverse
-    // =========================
-    static void printReverse(DNode head) {
-        if (head == null) return;
-        DNode tail = head;
-        while (tail.next != null) tail = tail.next;
-        for (DNode cur = tail; cur != null; cur = cur.prev)
-            System.out.print(cur.data + " ");
+    /* =========================
+       Q10: Remove duplicates from doubly linked list
+       ========================= */
+    static void removeDuplicates(DNode head) {
+        HashSet<Integer> set = new HashSet<>();
+        DNode temp = head;
+
+        while (temp != null) {
+            if (set.contains(temp.data)) {
+                if (temp.prev != null)
+                    temp.prev.next = temp.next;
+                if (temp.next != null)
+                    temp.next.prev = temp.prev;
+            } else {
+                set.add(temp.data);
+            }
+            temp = temp.next;
+        }
+    }
+
+    /* =========================
+       Q11: Traverse doubly linked list in reverse
+       ========================= */
+    static void printReverse(DNode tail) {
+        while (tail != null) {
+            System.out.print(tail.data + " ");
+            tail = tail.prev;
+        }
         System.out.println();
     }
 
-    // =========================
-    // Q14: Search in doubly linked list
-    // =========================
-    static boolean search(DNode head, int value) {
-        for (DNode cur = head; cur != null; cur = cur.next)
-            if (cur.data == value) return true;
+    /* =========================
+       Q12: Search element in doubly linked list
+       ========================= */
+    static boolean searchDoubly(DNode head, int key) {
+        while (head != null) {
+            if (head.data == key)
+                return true;
+            head = head.next;
+        }
         return false;
     }
 
-    // =========================
-    // Circular Linked List Node
-    // =========================
+    /* =========================
+       Circular Linked List Node
+       ========================= */
     static class CNode {
         int data;
         CNode next;
-        CNode(int d) { data = d; }
+        CNode(int data) {
+            this.data = data;
+        }
     }
 
-    // =========================
-    // Q15: Insert at specific position in circular linked list
-    // =========================
-    static CNode insertAt(CNode head, int pos, int val) {
-        CNode n = new CNode(val);
+    /* =========================
+       Q13: Insert node at specific position in circular linked list
+       ========================= */
+    static CNode insertCircular(CNode head, int data, int pos) {
+        CNode newNode = new CNode(data);
+
         if (head == null) {
-            n.next = n;
-            return n;
+            newNode.next = newNode;
+            return newNode;
         }
 
         if (pos == 0) {
-            CNode last = head;
-            while (last.next != head) last = last.next;
-            n.next = head;
-            last.next = n;
-            return n;
+            CNode temp = head;
+            while (temp.next != head)
+                temp = temp.next;
+            temp.next = newNode;
+            newNode.next = head;
+            return newNode;
         }
 
-        CNode prev = head;
-        for (int i = 1; i < pos && prev.next != head; i++)
-            prev = prev.next;
+        CNode temp = head;
+        for (int i = 0; i < pos - 1 && temp.next != head; i++)
+            temp = temp.next;
 
-        n.next = prev.next;
-        prev.next = n;
+        newNode.next = temp.next;
+        temp.next = newNode;
         return head;
     }
 
-    // =========================
-    // Q16: Delete at specific position in circular linked list
-    // =========================
-    static CNode deleteAt(CNode head, int pos) {
+    /* =========================
+       Q14: Delete node at specific position in circular linked list
+       ========================= */
+    static CNode deleteCircular(CNode head, int pos) {
         if (head == null) return null;
 
         if (pos == 0) {
             if (head.next == head) return null;
-            CNode last = head;
-            while (last.next != head) last = last.next;
-            head = head.next;
-            last.next = head;
-            return head;
+            CNode temp = head;
+            while (temp.next != head)
+                temp = temp.next;
+            temp.next = head.next;
+            return head.next;
         }
 
-        CNode prev = head;
-        for (int i = 1; i < pos && prev.next != head; i++)
-            prev = prev.next;
+        CNode temp = head;
+        for (int i = 0; i < pos - 1 && temp.next != head; i++)
+            temp = temp.next;
 
-        prev.next = prev.next.next;
+        temp.next = temp.next.next;
         return head;
     }
 
-    // =========================
-    // Q17: Search in circular linked list
-    // =========================
-    static boolean searchCircular(CNode head, int value) {
+    /* =========================
+       Q15: Search element in circular linked list
+       ========================= */
+    static boolean searchCircular(CNode head, int key) {
         if (head == null) return false;
-        CNode cur = head;
+        CNode temp = head;
         do {
-            if (cur.data == value) return true;
-            cur = cur.next;
-        } while (cur != head);
+            if (temp.data == key)
+                return true;
+            temp = temp.next;
+        } while (temp != head);
         return false;
     }
 
-    // =========================
-    // Q18: Split circular linked list into two halves
-    // =========================
-    static CNode[] splitHalves(CNode head) {
-        if (head == null) return new CNode[]{null, null};
+    /* =========================
+       Q16: Split circular linked list into two halves
+       ========================= */
+    static void splitCircular(CNode head) {
+        if (head == null || head.next == head) return;
 
         CNode slow = head, fast = head;
+
         while (fast.next != head && fast.next.next != head) {
             slow = slow.next;
             fast = fast.next.next;
@@ -279,9 +293,26 @@ public class Assignment1 {
         CNode head1 = head;
         CNode head2 = slow.next;
 
-        fast.next = head2;
         slow.next = head1;
 
-        return new CNode[]{head1, head2};
+        CNode temp = head2;
+        while (temp.next != head)
+            temp = temp.next;
+        temp.next = head2;
+
+        System.out.println("First Half:");
+        printCircular(head1);
+        System.out.println("Second Half:");
+        printCircular(head2);
+    }
+
+    static void printCircular(CNode head) {
+        if (head == null) return;
+        CNode temp = head;
+        do {
+            System.out.print(temp.data + " ");
+            temp = temp.next;
+        } while (temp != head);
+        System.out.println();
     }
 }
